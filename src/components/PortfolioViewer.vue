@@ -95,7 +95,7 @@
       // Load the PDF and render the first spread (default)
       onMounted(async () => {
         try {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = "/node_modules/pdfjs-dist/build/pdf.worker.min.mjs";
+            pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
   
           pdfDoc.value = await pdfjsLib.getDocument(props.src).promise;
           totalPages.value = pdfDoc.value.numPages;

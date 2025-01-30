@@ -92,7 +92,7 @@ export default {
     // Initialize and load the PDF
     onMounted(async () => {
       try {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "/node_modules/pdfjs-dist/build/pdf.worker.min.mjs";
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
         const pdfDoc = await pdfjsLib.getDocument(props.src).promise;
         totalPages.value = pdfDoc.numPages;
