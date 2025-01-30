@@ -1,5 +1,11 @@
 <template>
   <div class="magazine-viewer">
+    <header class="header">
+      <h1>PORTFOLIO</h1>
+      <nav class="menu">
+        <a :href="src" download>Direct Download</a>
+      </nav>
+    </header>
     <div class="spread">
       <canvas ref="leftCanvas" class="page"></canvas>
       <canvas ref="rightCanvas" class="page"></canvas>
@@ -29,6 +35,9 @@ export default {
     const currentPage = ref(1); // Default to page 1
     const totalPages = ref(0);
 
+    // Smooth animation duration in milliseconds
+    const animationDuration = 500;
+
     // Render a specific page
     const renderPage = async (canvasRef, pageNum) => {
       if (!canvasRef.value) return;
@@ -55,6 +64,15 @@ export default {
       }
     };
 
+    // Smoothly fade out old pages, then fade in new pages
+    const smoothTransition = async (callback) => {
+      const spread = document.querySelector(".spread");
+      spread.style.opacity = 0; // Fade out
+      await new Promise((resolve) => setTimeout(resolve, animationDuration));
+      await callback(); // Update content
+      spread.style.opacity = 1; // Fade in
+    };
+
     // Render both the left and right pages (spread)
     const renderSpread = async () => {
       const leftPage = currentPage.value;
@@ -77,7 +95,7 @@ export default {
     const prevPage = () => {
       if (currentPage.value > 1) {
         currentPage.value -= 2; // Go back 2 pages (spread)
-        renderSpread();
+        smoothTransition(renderSpread);
       }
     };
 
@@ -85,7 +103,7 @@ export default {
     const nextPage = () => {
       if (currentPage.value < totalPages.value - 1) {
         currentPage.value += 2; // Move forward 2 pages (spread)
-        renderSpread();
+        smoothTransition(renderSpread);
       }
     };
 
@@ -104,12 +122,61 @@ export default {
       }
     });
 
-    return { leftCanvas, rightCanvas, currentPage, totalPages, prevPage, nextPage };
+    const viewPortfolio = () => {
+      alert("View Portfolio clicked!");
+    };
+
+    return {
+      leftCanvas,
+      rightCanvas,
+      currentPage,
+      totalPages,
+      prevPage,
+      nextPage,
+      viewPortfolio,
+    };
   },
 };
 </script>
 
 <style scoped>
+/* Header styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.menu {
+  display: flex;
+  gap: 15px;
+}
+
+.menu a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.menu a:hover {
+  border: 1px solid #fff;
+}
+
+/* Viewer styles */
 .magazine-viewer {
   display: flex;
   flex-direction: column;
@@ -121,12 +188,13 @@ export default {
 
 .spread {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   background-color: #fff;
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: opacity 0.5s ease-in-out; /* Smooth transition */
 }
 
 .page {
